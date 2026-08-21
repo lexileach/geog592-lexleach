@@ -4,8 +4,8 @@ This repository contains exercises and assignments for GEOG 592.
 
 ## Student information
 
-Name:
+Name: Lexi Leach
 
-ONYEN:
+ONYEN: lexleach
 
-GitHub username:
+GitHub username: lexileach
