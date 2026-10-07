@@ -14,6 +14,10 @@ This dataset contains the county boundaries for North Carolina.\
 This dataset contains all of the existing major roads in North Carolina. The original source data was a geodatabase, so I converted it to a GeoJSON in QGIS. While doing so, I selected only interstates and US routes so that the data was not so bulky with every single minor NC road. Now, the analysis can focus chargers accessible by major highways and roads.\
 **Source:**  https://connect.ncdot.gov/resources/gis/Pages/GIS-Data-Layers.aspx
 
+5. unc_parking.geojson\
+This dataset includes geometries for each of the parking structures on UNC's campus.\
+**Source:** https://go.unc.edu/i3F8P
+
 4. evs.csv\
 This dataset contains all registered cars in North Carolina counties by type. In particular, I will be interested in pulling the number of electric vehicles in each county.\
 **Source:** https://www.ncdot.gov/initiatives-policies/environmental/climate-change/Pages/zev-registration-data.aspx
