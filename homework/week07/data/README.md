@@ -16,7 +16,7 @@ This dataset contains all of the existing major roads in North Carolina. The ori
 
 5. unc_parking.geojson\
 This dataset includes geometries for each of the parking structures on UNC's campus.\
-**Source:** https://go.unc.edu/i3F8P
+**Source:** https://gismaps.unc.edu/arcgis/rest/services/ParkingInventory/FeatureServer
 
 4. evs.csv\
 This dataset contains all registered cars in North Carolina counties by type. In particular, I will be interested in pulling the number of electric vehicles in each county.\
