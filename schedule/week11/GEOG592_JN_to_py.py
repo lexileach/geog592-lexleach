@@ -1,15 +1,22 @@
 print("importing modules")
-import pandas as pd
+# import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon, Ellipse
 from matplotlib.backends.backend_pdf import PdfPages 
-
+import argparse
 
 # In[34]:
 
-
-statefp = "20"
+parser = argparse.ArgumentParser(
+        description="A program that makes an Atlas."
+    )
+parser.add_argument("statefp", help="The STATEFP code: for example, North Carolina is '37'")
+parser.add_argument("statename", help="The STATE_NAME code to be printed on the Atlas")
+args = parser.parse_args()
+statefp = args.statefp
+statename = args.statename
+# statefp = "20"
 
 # getting the US census data
 print("Downloading data from CENSUS")
@@ -22,6 +29,7 @@ url_state = "cb_2024_us_state_500k.zip" # state level
 print("I will select statefp = ", statefp)
 counties = gpd.read_file(url_0+url_county)
 state_counties = counties.loc[counties["STATEFP"] == statefp].copy()
+state_counties = counties.loc[counties["STATE_NAME"] == statename].copy()
 # state_counties.plot(edgecolor="black", facecolor="white")
 state_counties = state_counties.sort_values("NAME").reset_index(drop=True)
 
@@ -142,7 +150,7 @@ def county_figure(county, pdf):
     # Page heading
     fig.text(
         0.05, 0.94,
-        statefp + " / County Water-Land Atlas",
+        statename + " / County Water-Land Atlas",
         fontsize=10,
         color="olivedrab"
     )
