@@ -6,7 +6,6 @@ from matplotlib.patches import Polygon, Ellipse
 from matplotlib.backends.backend_pdf import PdfPages 
 import argparse
 
-# In[34]:
 
 parser = argparse.ArgumentParser(
         description="A program that makes an Atlas."
@@ -40,9 +39,6 @@ state_counties = counties.loc[counties["STATE_NAME"] == statename].copy()
 state_counties = state_counties.sort_values("NAME").reset_index(drop=True)
 
 
-# In[35]:
-
-
 #let's make each into a function with county and ax being the parameter
 
 def county_map(county, ax):
@@ -56,9 +52,6 @@ def locator_map(county, ax):
     state_counties.plot(ax=ax, edgecolor="gray", facecolor="white")
     selected.plot(ax=ax, edgecolor="black", facecolor=county_facecolor)
     ax.set_axis_off()
-
-
-# In[36]:
 
 
 # Making a pie chart function
@@ -77,9 +70,6 @@ def county_pie(county, ax):
     )
 
     ax.set_title("Land and water")
-
-
-# In[37]:
 
 
 def county_info(county, ax):
@@ -131,9 +121,6 @@ def county_info(county, ax):
     ax.set_axis_off()
 
 
-# In[38]:
-
-
 #Let's make it a function
 
 def county_figure(county, pdf):
@@ -180,8 +167,6 @@ def county_figure(county, pdf):
     plt.close(fig)
 
 
-# In[39]:
-
 print("I am making a pdf")
 pdfname = statefp + ".pdf"
 # This might take a few seconds and you need at least 40MB of free space in your computer
@@ -189,10 +174,4 @@ with PdfPages(pdfname) as pdf:  #with #manages a resource and automatically clea
     for county in state_counties["NAME"]:
         county_figure(county, pdf)
 print("Done")
-
-# In[ ]:
-
-
-# get_ipython().run_line_magic('pip', 'install nbconvert')
-# python3 -m nbconvert --to script "GEOG592_JN_to_py.ipynb"
 
