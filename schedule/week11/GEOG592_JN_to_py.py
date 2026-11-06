@@ -13,10 +13,16 @@ parser = argparse.ArgumentParser(
     )
 parser.add_argument("statefp", help="The STATEFP code: for example, North Carolina is '37'")
 parser.add_argument("statename", help="The STATE_NAME code to be printed on the Atlas")
+parser.add_argument(
+        "--facecolor", default="#7b9b90",
+        help="Color of selected county"
+    )
 args = parser.parse_args()
 statefp = args.statefp
 statename = args.statename
+county_facecolor = args.facecolor
 # statefp = "20"
+
 
 # getting the US census data
 print("Downloading data from CENSUS")
@@ -41,14 +47,14 @@ state_counties = state_counties.sort_values("NAME").reset_index(drop=True)
 
 def county_map(county, ax):
     selected = state_counties[state_counties["NAME"] == county]
-    selected.plot(ax=ax, edgecolor="black", facecolor="#7b9b90")
+    selected.plot(ax=ax, edgecolor="black", facecolor=county_facecolor)
     ax.set_axis_off()
 
 
 def locator_map(county, ax):
     selected = state_counties[state_counties["NAME"] == county]
     state_counties.plot(ax=ax, edgecolor="gray", facecolor="white")
-    selected.plot(ax=ax, edgecolor="black", facecolor="#7b9b90")
+    selected.plot(ax=ax, edgecolor="black", facecolor=county_facecolor)
     ax.set_axis_off()
 
 
