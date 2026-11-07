@@ -38,7 +38,6 @@ url_state = "cb_2024_us_state_500k.zip" # state level
 print("Selecting state")
 counties = gpd.read_file(url_0+url_county)
 state_counties = counties.loc[counties["STATEFP"] == statefp].copy()
-state_counties = counties.loc[counties["STATE_NAME"] == statename].copy()
 state_counties = state_counties.sort_values("NAME").reset_index(drop=True)
 
 
