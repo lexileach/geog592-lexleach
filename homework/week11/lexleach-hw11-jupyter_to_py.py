@@ -1,22 +1,30 @@
-#!/usr/bin/env python
-# coding: utf-8
 
-# # GEOG 592 — Week 11 Homework
-# ## Jupyter Notebook to Py
-
-# ## Data Preparation and Spatial Join
-
-# In[12]:
-
-
-import pandas as pd
+# importing modules
+print("Importing modules")
 import geopandas as gpd
 import matplotlib.pyplot as plt
-from matplotlib.patches import Polygon, Ellipse
 from matplotlib.backends.backend_pdf import PdfPages 
+import argparse
 
 
-# In[13]:
+parser = argparse.ArgumentParser(
+        description="A program that makes an Atlas of permitted composting locations."
+    )
+parser.add_argument("statefp", help="The STATEFP code: for example, North Carolina is '37'")
+parser.add_argument("statename", help="The STATE_NAME code to be printed on the Atlas")
+parser.add_argument(
+        "--facecolor", default="limegreen",
+        help="Color of selected county"
+    )
+parser.add_argument(
+        "--pdfname", default = "state_compost_map.pdf",
+        help="Name of exported Atlas pdf"
+)
+args = parser.parse_args()
+statefp = args.statefp
+statename = args.statename
+county_facecolor = args.facecolor
+pdfname = args.pdfname
 
 
 # getting the US census data
@@ -27,37 +35,30 @@ url_state = "cb_2024_us_state_500k.zip" # state level
 
 
 ## code for county level data 
-print("Selecting North Carolina")
+print("Selecting state")
 counties = gpd.read_file(url_0+url_county)
-nc_counties = counties.loc[counties["STATEFP"] == "37"].to_crs(6543).copy()
-nc_counties = nc_counties.sort_values("NAME").reset_index(drop=True)
+state_counties = counties.loc[counties["STATEFP"] == statefp].copy()
+state_counties = counties.loc[counties["STATE_NAME"] == statename].copy()
+state_counties = state_counties.sort_values("NAME").reset_index(drop=True)
 
 
 # ## Spatial Join
 
-# In[14]:
-
 
 # Read data
 print("Loading compost")
-compost = gpd.read_file("data/Permitted_Compost_Facilities.geojson")
-compost = compost.to_crs(epsg=6543)
-compost = compost[["PermitName","geometry"]].copy()
+compost = gpd.read_file("data/compost_locations.geojson")
+compost = compost.to_crs(epsg=4269)
+compost = compost[["Name","geometry"]].copy()
 
 # spatial join
 print("Completing spatial join")
-compost_by_county = gpd.sjoin(compost, nc_counties, predicate='within')
-
-
-# In[15]:
+compost_by_county = gpd.sjoin(compost, state_counties, predicate='within')
 
 
 # compost count in each county
 
 compost_count = compost_by_county["NAME"].value_counts()
-
-
-# In[16]:
 
 
 # creating new table
@@ -66,12 +67,9 @@ compost_count_table = compost_count.reset_index()
 compost_count_table.columns = ["NAME", "Compost"]
 
 
-# In[17]:
-
-
 # add new column
 print("Cleaning data")
-compost_by_county = nc_counties.merge(compost_count_table, on="NAME", how="left")
+compost_by_county = state_counties.merge(compost_count_table, on="NAME", how="left")
 compost_by_county["Compost"] = compost_by_county["Compost"].fillna(0)
 compost_by_county["Compost"] = compost_by_county["Compost"].astype(int)
 
@@ -82,25 +80,20 @@ compost_by_county = compost_by_county[["NAME", "geometry", "Compost"]].copy()
 
 # ## Atlas 
 
-# In[18]:
-
 
 # function with county and ax being the parameter
 print("Making map functions")
 def county_map(county, ax):
     selected = compost_by_county[compost_by_county["NAME"] == county]
-    selected.plot(ax=ax, edgecolor="black", facecolor="limegreen")
+    selected.plot(ax=ax, edgecolor="black", facecolor=county_facecolor)
     ax.set_axis_off()
 
 
 def locator_map(county, ax):
     selected = compost_by_county[compost_by_county["NAME"] == county]
     compost_by_county.plot(ax=ax, edgecolor="gray", facecolor="white")
-    selected.plot(ax=ax, edgecolor="black", facecolor="limegreen")
+    selected.plot(ax=ax, edgecolor="black", facecolor=county_facecolor)
     ax.set_axis_off()
-
-
-# In[19]:
 
 
 # Defining number of facilities map function
@@ -121,9 +114,6 @@ def county_info(county, ax):
     ax.set_axis_off()
 
 
-# In[20]:
-
-
 def county_figure(county, pdf):
 
     fig = plt.figure(figsize=(12, 8))
@@ -141,7 +131,7 @@ def county_figure(county, pdf):
     # Page heading
     fig.text(
         0.05, 0.94,
-        "NORTH CAROLINA / Permitted Compost Facility Atlas",
+        statename + " / Permitted Compost Facility Atlas",
         fontsize=10,
         color="olivedrab"
     )
@@ -165,16 +155,9 @@ def county_figure(county, pdf):
     plt.close(fig)
 
 
-# In[21]:
-
 print("Creating pdf")
-with PdfPages("NC_Compost_Counties.pdf") as pdf:  
+with PdfPages(pdfname) as pdf:  
     for county in compost_by_county["NAME"]:
         county_figure(county, pdf)
 
-
-# In[ ]:
-
-
-# get_ipython().run_line_magic('pip', 'install nbconvert')
-# python3 -m nbconvert --to script "lexleach-hw11-jupyter_to_py.ipynb"
+print("Done!")
